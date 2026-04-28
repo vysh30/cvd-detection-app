@@ -1,7 +1,7 @@
 # CVD Detection App 🫀
 
 A patient-facing Cardiovascular Disease (CVD) risk assessment 
-web application built as part of my B.Tech Major Project.
+web application 
 
 ## Live Demo
 https://github.com/vysh30/cvd-detection-app.git
