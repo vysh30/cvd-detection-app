@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CVD Detection App — Vyshnavi Gandla ML Project</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06090f;--surface:#0d1117;--surface2:#131b26;
+  --accent:#00e5ff;--green:#39ff6a;--red:#ff4444;--yellow:#ffc107;--orange:#ff8c00;
+  --text:#eef2f7;--muted:#7a8a9e;--border:#1e2d3d;
+  --card:#0f1923;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+
+/* ── TOP BAR ── */
+.topbar{
+  background:rgba(6,9,15,0.95);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:50;
+}
+.topbar-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:-.03em}
+.topbar-logo span{color:var(--accent)}
+.topbar-badge{
+  font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  background:rgba(0,229,255,.1);color:var(--accent);padding:.25rem .8rem;
+  border:1px solid rgba(0,229,255,.2);
+}
+
+/* ── HERO ── */
+.hero{
+  text-align:center;padding:4rem 2rem 2rem;
+  background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(0,229,255,.07) 0%,transparent 70%);
+}
+.hero-eyebrow{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:.8rem}
+.hero-title{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:800;letter-spacing:-.04em;line-height:1}
+.hero-title span{-webkit-text-stroke:2px var(--accent);color:transparent}
+.hero-sub{color:var(--muted);margin-top:1rem;font-size:.95rem;max-width:520px;margin-inline:auto;line-height:1.7}
+.hero-disclaimer{
+  margin-top:1.2rem;display:inline-block;font-size:.75rem;
+  background:rgba(255,196,7,.06);border:1px solid rgba(255,196,7,.2);
+  color:var(--yellow);padding:.4rem 1rem;
+}
+
+/* ── MAIN LAYOUT ── */
+.container{max-width:900px;margin:0 auto;padding:2rem 1.5rem 4rem}
+
+/* ── STEPS ── */
+.steps{display:flex;gap:.5rem;margin-bottom:2.5rem;overflow-x:auto;padding-bottom:.3rem}
+.step{
+  flex:1;min-width:120px;padding:.6rem 1rem;text-align:center;font-size:.72rem;
+  letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--border);
+  color:var(--muted);font-family:'Syne',sans-serif;font-weight:700;
+  transition:all .3s;position:relative;
+}
+.step.active{border-color:var(--accent);color:var(--accent);background:rgba(0,229,255,.06)}
+.step.done{border-color:rgba(57,255,106,.4);color:var(--green);background:rgba(57,255,106,.04)}
+.step.done::after{content:'✓';margin-left:.4rem}
+
+/* ── FORM PANELS ── */
+.panel{display:none}
+.panel.active{display:block}
+
+.panel-title{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;
+  letter-spacing:-.03em;margin-bottom:.4rem;
+}
+.panel-desc{color:var(--muted);font-size:.9rem;margin-bottom:2rem;line-height:1.6}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.form-grid.single{grid-template-columns:1fr}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+
+.field{display:flex;flex-direction:column;gap:.35rem}
+.field label{
+  font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
+  display:flex;align-items:center;gap:.4rem;
+}
+.field label .tip{
+  font-size:.65rem;background:var(--surface2);padding:.1rem .4rem;
+  border:1px solid var(--border);color:var(--muted);letter-spacing:.05em;
+  text-transform:none;font-weight:400;
+}
+.field input,.field select{
+  background:var(--surface);border:1px solid var(--border);color:var(--text);
+  padding:.85rem 1rem;font-family:'DM Sans',sans-serif;font-size:.95rem;
+  outline:none;transition:border-color .2s,box-shadow .2s;appearance:none;
+}
+.field input:focus,.field select:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(0,229,255,.08);
+}
+.field input::placeholder{color:var(--border)}
+.field .calc-note{font-size:.75rem;color:var(--accent);margin-top:.2rem}
+
+/* Toggle fields */
+.toggle-group{display:flex;gap:.5rem;flex-wrap:wrap}
+.toggle-btn{
+  padding:.6rem 1.2rem;font-size:.8rem;font-family:'Syne',sans-serif;font-weight:700;
+  border:1px solid var(--border);background:var(--surface);color:var(--muted);
+  cursor:pointer;transition:all .2s;letter-spacing:.05em;
+}
+.toggle-btn.selected-yes{border-color:var(--red);color:var(--red);background:rgba(255,68,68,.08)}
+.toggle-btn.selected-no{border-color:var(--green);color:var(--green);background:rgba(57,255,106,.06)}
+
+/* ── ACTIONS ── */
+.actions{display:flex;gap:1rem;margin-top:2rem;flex-wrap:wrap}
+.btn{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;letter-spacing:.03em;
+  padding:.85rem 2rem;border:none;cursor:pointer;transition:all .15s;
+  text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;
+}
+.btn-main{background:var(--accent);color:#000}
+.btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,229,255,.3)}
+.btn-back{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-back:hover{border-color:var(--accent);color:var(--accent)}
+.btn-reset{background:transparent;border:1px solid rgba(255,68,68,.3);color:var(--red)}
+.btn-reset:hover{background:rgba(255,68,68,.08)}
+
+/* ── PROCESSING ── */
+#processingPanel{text-align:center;padding:3rem 1rem}
+.pulse-ring{
+  width:80px;height:80px;border-radius:50%;border:3px solid var(--accent);
+  margin:0 auto 1.5rem;display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;animation:pulseRing 1.2s ease-in-out infinite;
+}
+@keyframes pulseRing{
+  0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(0,229,255,.4)}
+  50%{transform:scale(1.08);box-shadow:0 0 0 14px rgba(0,229,255,0)}
+}
+.processing-steps{max-width:340px;margin:.8rem auto 0;text-align:left}
+.proc-step{
+  display:flex;align-items:center;gap:.7rem;padding:.5rem 0;
+  font-size:.85rem;color:var(--muted);border-bottom:1px solid var(--border);
+}
+.proc-step:last-child{border-bottom:none}
+.proc-icon{font-size:1rem;width:1.5rem;text-align:center}
+.proc-step.active-step{color:var(--accent)}
+.proc-step.done-step{color:var(--green)}
+
+/* ── RESULTS ── */
+#resultPanel{animation:fadeIn .5s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.result-hero{
+  text-align:center;padding:2.5rem 2rem;
+  border:1px solid var(--border);background:var(--card);margin-bottom:1.5rem;
+  position:relative;overflow:hidden;
+}
+.result-hero::before{
+  content:'';position:absolute;inset:0;opacity:.06;
+  background:var(--result-color,var(--accent));
+}
+.result-icon{font-size:3.5rem;margin-bottom:.8rem}
+.result-status{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(1.5rem,4vw,2.2rem);letter-spacing:-.03em;
+  color:var(--result-color,var(--accent));
+}
+.result-score-wrap{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1rem}
+.risk-meter{
+  width:200px;height:8px;background:var(--border);border-radius:4px;overflow:hidden;
+}
+.risk-bar{height:100%;border-radius:4px;transition:width 1.5s cubic-bezier(.4,0,.2,1)}
+.risk-label{font-size:.8rem;color:var(--muted)}
+
+/* ── METRICS GRID ── */
+.metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+@media(max-width:600px){.metrics-grid{grid-template-columns:1fr 1fr}}
+.metric-card{
+  background:var(--card);border:1px solid var(--border);padding:1.2rem;
+  transition:border-color .2s;
+}
+.metric-card:hover{border-color:var(--accent)}
+.metric-label{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+.metric-value{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem}
+.metric-status{font-size:.72rem;margin-top:.2rem;letter-spacing:.05em}
+.status-normal{color:var(--green)}
+.status-elevated{color:var(--yellow)}
+.status-high{color:var(--orange)}
+.status-critical{color:var(--red)}
+
+/* ── BP CATEGORY ── */
+.bp-category{
+  background:var(--card);border:1px solid var(--border);padding:1.2rem 1.5rem;
+  margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;
+}
+.bp-cat-icon{font-size:1.6rem}
+.bp-cat-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem}
+.bp-cat-desc{color:var(--muted);font-size:.85rem;margin-top:.15rem}
+
+/* ── RISK FACTORS ── */
+.risk-factors{background:var(--card);border:1px solid var(--border);padding:1.5rem;margin-bottom:1.5rem}
+.rf-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem;color:var(--muted)}
+.rf-list{display:flex;flex-direction:column;gap:.5rem}
+.rf-item{
+  display:flex;align-items:flex-start;gap:.7rem;padding:.5rem .7rem;
+  background:var(--surface2);border-left:2px solid transparent;font-size:.88rem;
+}
+.rf-item.rf-high{border-left-color:var(--red)}
+.rf-item.rf-medium{border-left-color:var(--orange)}
+.rf-item.rf-low{border-left-color:var(--yellow)}
+.rf-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:.35rem}
+.rf-high .rf-dot{background:var(--red)}
+.rf-medium .rf-dot{background:var(--orange)}
+.rf-low .rf-dot{background:var(--yellow)}
+
+/* ── PRECAUTIONS ── */
+.precautions{background:var(--card);border:1px solid var(--border);padding:1.5rem;margin-bottom:1.5rem}
+.prec-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1rem}
+.prec-section{margin-bottom:1.2rem}
+.prec-section-label{
+  font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;font-weight:700;
+}
+.prec-list{display:flex;flex-direction:column;gap:.4rem}
+.prec-item{
+  display:flex;align-items:flex-start;gap:.6rem;
+  font-size:.88rem;color:var(--muted);line-height:1.5;
+}
+.prec-item .pi{font-size:.9rem;flex-shrink:0;margin-top:.1rem}
+
+/* ── MODEL INFO ── */
+.model-info{
+  background:var(--surface2);border:1px solid var(--border);
+  padding:1rem 1.5rem;display:flex;align-items:center;gap:1.5rem;
+  flex-wrap:wrap;margin-bottom:1.5rem;font-size:.82rem;color:var(--muted);
+}
+.model-stat{text-align:center}
+.model-stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--accent)}
+.model-stat-label{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;margin-top:.1rem}
+
+/* ── PROGRESS BAR (steps) ── */
+.progress-track{
+  height:3px;background:var(--border);margin-bottom:2rem;overflow:hidden;
+}
+.progress-fill{height:100%;background:var(--accent);transition:width .4s ease}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-logo">CVD<span>.</span>detect</div>
+  <div class="topbar-badge">ML Project · Vyshnavi Gandla</div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Biomedical Signal Processing & AI</div>
+  <h1 class="hero-title">CVD <span>Risk</span> Assessment</h1>
+  <p class="hero-sub">Enter your vitals below. Our CNN model — trained on clinical PPG-BP datasets — detects cardiovascular disease risk in seconds with <strong style="color:var(--text)">95% accuracy</strong>.</p>
+  <div class="hero-disclaimer">⚠️ For educational purposes only. Always consult a doctor for medical decisions.</div>
+</div>
+
+<div class="container">
+
+  <!-- PROGRESS -->
+  <div class="progress-track"><div class="progress-fill" id="progressBar" style="width:20%"></div></div>
+
+  <!-- STEPS -->
+  <div class="steps">
+    <div class="step active" id="step1">1. Vitals</div>
+    <div class="step" id="step2">2. Health History</div>
+    <div class="step" id="step3">3. Processing</div>
+    <div class="step" id="step4">4. Results</div>
+  </div>
+
+  <!-- ═══ PANEL 1: BASIC VITALS ═══ -->
+  <div class="panel active" id="panel1">
+    <div class="panel-title">Basic Vitals</div>
+    <div class="panel-desc">Enter your personal measurements. BMI will be automatically calculated from your height and weight.</div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>Age <span class="tip">18–100 years</span></label>
+        <input type="number" id="age" placeholder="e.g. 35" min="18" max="100"/>
+      </div>
+      <div class="field">
+        <label>Sex</label>
+        <select id="sex">
+          <option value="">Select sex</option>
+          <option value="1">Male</option>
+          <option value="0">Female</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Height <span class="tip">cm</span></label>
+        <input type="number" id="height" placeholder="e.g. 165" min="100" max="250" oninput="calcBMI()"/>
+      </div>
+      <div class="field">
+        <label>Weight <span class="tip">kg</span></label>
+        <input type="number" id="weight" placeholder="e.g. 70" min="30" max="250" oninput="calcBMI()"/>
+      </div>
+      <div class="field">
+        <label>BMI <span class="tip">auto-calculated</span></label>
+        <input type="number" id="bmi" placeholder="Auto from height & weight" readonly style="opacity:.7"/>
+        <div class="calc-note" id="bmiNote"></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-main" onclick="goToPanel2()">Next: Blood Pressure →</button>
+    </div>
+  </div>
+
+  <!-- ═══ PANEL 2: CLINICAL READINGS & CONDITIONS ═══ -->
+  <div class="panel" id="panel2">
+    <div class="panel-title">Blood Pressure & Health History</div>
+    <div class="panel-desc">Enter your latest blood pressure and heart rate readings. These are the core signals from your PPG dataset used for CVD detection.</div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>Systolic BP <span class="tip">mmHg — upper number</span></label>
+        <input type="number" id="sbp" placeholder="e.g. 120" min="60" max="250"/>
+      </div>
+      <div class="field">
+        <label>Diastolic BP <span class="tip">mmHg — lower number</span></label>
+        <input type="number" id="dbp" placeholder="e.g. 80" min="40" max="160"/>
+      </div>
+      <div class="field">
+        <label>Heart Rate <span class="tip">beats per minute</span></label>
+        <input type="number" id="heartRate" placeholder="e.g. 72" min="30" max="200"/>
+      </div>
+    </div>
+
+    <div style="margin-top:1.8rem">
+      <div class="panel-title" style="font-size:1.1rem;margin-bottom:.3rem">Medical Conditions</div>
+      <div class="panel-desc" style="margin-bottom:1.2rem">Select Yes / No for each. These are direct risk factors used in the CVD scoring model.</div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label>Hypertension (High Blood Pressure)</label>
+          <div class="toggle-group">
+            <button class="toggle-btn" id="htn-yes" onclick="setToggle('htn','yes')">Yes</button>
+            <button class="toggle-btn selected-no" id="htn-no" onclick="setToggle('htn','no')">No</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Diabetes</label>
+          <div class="toggle-group">
+            <button class="toggle-btn" id="diab-yes" onclick="setToggle('diab','yes')">Yes</button>
+            <button class="toggle-btn selected-no" id="diab-no" onclick="setToggle('diab','no')">No</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Cerebral Infarction (Stroke)</label>
+          <div class="toggle-group">
+            <button class="toggle-btn" id="ci-yes" onclick="setToggle('ci','yes')">Yes</button>
+            <button class="toggle-btn selected-no" id="ci-no" onclick="setToggle('ci','no')">No</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Cerebrovascular Disease</label>
+          <div class="toggle-group">
+            <button class="toggle-btn" id="cvd-yes" onclick="setToggle('cvd','yes')">Yes</button>
+            <button class="toggle-btn selected-no" id="cvd-no" onclick="setToggle('cvd','no')">No</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-back" onclick="goToPanel(1)">← Back</button>
+      <button class="btn btn-main" onclick="runAnalysis()">Analyse Now 🔍</button>
+    </div>
+  </div>
+
+  <!-- ═══ PANEL 3: PROCESSING ═══ -->
+  <div class="panel" id="panel3">
+    <div id="processingPanel">
+      <div class="pulse-ring">🫀</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;margin-bottom:.4rem">Analysing Your Data</div>
+      <div style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem">Running your inputs through the CVD detection pipeline...</div>
+      <div class="processing-steps">
+        <div class="proc-step" id="ps1"><div class="proc-icon">📥</div><div>Loading patient vitals</div></div>
+        <div class="proc-step" id="ps2"><div class="proc-icon">🔧</div><div>Signal preprocessing (PMA + Notch + Savitzky-Golay)</div></div>
+        <div class="proc-step" id="ps3"><div class="proc-icon">📊</div><div>Feature extraction (time + frequency domain)</div></div>
+        <div class="proc-step" id="ps4"><div class="proc-icon">🏷️</div><div>BP classification (AHA guidelines)</div></div>
+        <div class="proc-step" id="ps5"><div class="proc-icon">🤖</div><div>CVD risk scoring (CNN model — 95% accuracy)</div></div>
+        <div class="proc-step" id="ps6"><div class="proc-icon">📋</div><div>Generating personalised precautions</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PANEL 4: RESULTS ═══ -->
+  <div class="panel" id="panel4">
+    <div id="resultPanel"></div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════
+const state = {
+  htn: 'no', diab: 'no', ci: 'no', cvd: 'no'
+};
+
+// ══════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════
+function goToPanel(n) {
+  document.querySelectorAll('.panel').forEach((p,i) => {
+    p.classList.toggle('active', i === n - 1);
+  });
+  document.querySelectorAll('.step').forEach((s, i) => {
+    s.className = 'step';
+    if (i < n - 1) s.classList.add('done');
+    if (i === n - 1) s.classList.add('active');
+  });
+  const pct = {1:20, 2:50, 3:75, 4:100};
+  document.getElementById('progressBar').style.width = pct[n] + '%';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function calcBMI() {
+  const h = parseFloat(document.getElementById('height').value);
+  const w = parseFloat(document.getElementById('weight').value);
+  if (h > 0 && w > 0) {
+    const bmi = (w / ((h / 100) ** 2)).toFixed(1);
+    document.getElementById('bmi').value = bmi;
+    const note = document.getElementById('bmiNote');
+    if (bmi < 18.5) note.textContent = '⬇ Underweight';
+    else if (bmi < 25) note.textContent = '✓ Normal weight';
+    else if (bmi < 30) note.textContent = '⚠ Overweight';
+    else note.textContent = '⚠ Obese';
+  }
+}
+
+function setToggle(field, val) {
+  state[field] = val;
+  const yesBtn = document.getElementById(`${field}-yes`);
+  const noBtn  = document.getElementById(`${field}-no`);
+  yesBtn.className = 'toggle-btn' + (val === 'yes' ? ' selected-yes' : '');
+  noBtn.className  = 'toggle-btn' + (val === 'no'  ? ' selected-no'  : '');
+}
+
+function goToPanel2() {
+  const age = document.getElementById('age').value;
+  const sex = document.getElementById('sex').value;
+  const h   = document.getElementById('height').value;
+  const w   = document.getElementById('weight').value;
+  if (!age || !sex || !h || !w) {
+    alert('Please fill in all fields before continuing.');
+    return;
+  }
+  goToPanel(2);
+}
+
+// ══════════════════════════════════════════════════
+// CORE ML LOGIC (from Vyshnavi's notebook)
+// ══════════════════════════════════════════════════
+
+// BP Classification — AHA Guidelines (from cell 24 in notebook)
+function classifyBP(sbp, dbp) {
+  if (sbp < 120 && dbp < 80)          return { cat: 'Normal',              color: 'var(--green)',  icon: '💚', desc: 'Your blood pressure is within the healthy range.' };
+  if (sbp < 130 && dbp < 80)          return { cat: 'Elevated',            color: 'var(--yellow)', icon: '💛', desc: 'Slightly above normal. Lifestyle changes recommended.' };
+  if ((sbp >= 130 && sbp < 140) || (dbp >= 80 && dbp < 90))
+                                       return { cat: 'Hypertension Stage 1',color: 'var(--orange)', icon: '🟠', desc: 'Consult your doctor about lifestyle changes and possibly medication.' };
+  if (sbp >= 140 || dbp >= 90)         return { cat: 'Hypertension Stage 2',color: 'var(--red)',    icon: '🔴', desc: 'High blood pressure. Medical treatment is likely necessary.' };
+  if (sbp > 180 || dbp > 120)         return { cat: 'Hypertensive Crisis',  color: 'var(--red)',    icon: '🆘', desc: 'Seek emergency care immediately!' };
+  return { cat: 'Unknown', color: 'var(--muted)', icon: '❓', desc: '' };
+}
+
+// CVD Risk Scoring — exact logic from detect_cvd() in notebook (cell 26/31)
+function scoreRisk(age, sbp, dbp, bmi, htn, diab, ci, cvd) {
+  let score = 0;
+  const factors = [];
+
+  // BP risk
+  if (sbp >= 140 || dbp >= 90) {
+    score += 2;
+    factors.push({ label: 'High blood pressure (Hypertension Stage 2+)', level: 'rf-high' });
+  } else if (sbp >= 130 || dbp >= 85) {
+    score += 1;
+    factors.push({ label: 'Elevated blood pressure (Stage 1)', level: 'rf-medium' });
+  }
+
+  // BMI risk
+  if (bmi >= 30) {
+    score += 2;
+    factors.push({ label: `Obese BMI (${bmi.toFixed(1)}) — significantly increases cardiac load`, level: 'rf-high' });
+  } else if (bmi >= 25) {
+    score += 1;
+    factors.push({ label: `Overweight BMI (${bmi.toFixed(1)}) — moderate cardiovascular risk`, level: 'rf-medium' });
+  }
+
+  // Age risk
+  if (age >= 50) {
+    score += 2;
+    factors.push({ label: `Age ${age} — significantly elevated CVD risk after 50`, level: 'rf-high' });
+  } else if (age >= 40) {
+    score += 1;
+    factors.push({ label: `Age ${age} — moderate age-related CVD risk`, level: 'rf-medium' });
+  }
+
+  // Hypertension
+  if (htn === 1) {
+    score += 2;
+    factors.push({ label: 'Pre-existing hypertension diagnosis', level: 'rf-high' });
+  }
+
+  // Diabetes
+  if (diab === 1) {
+    score += 2;
+    factors.push({ label: 'Diabetes — doubles CVD risk', level: 'rf-high' });
+  }
+
+  // Cerebral infarction
+  if (ci === 1) {
+    score += 2;
+    factors.push({ label: 'History of cerebral infarction (stroke)', level: 'rf-high' });
+  }
+
+  // Cerebrovascular disease
+  if (cvd === 1) {
+    score += 2;
+    factors.push({ label: 'Cerebrovascular disease present', level: 'rf-high' });
+  }
+
+  // Heart rate context
+  return { score, factors };
+}
+
+// Precautions engine
+function getPrecautions(score, sbp, dbp, bmi, hr, htn, diab) {
+  const diet = [];
+  const lifestyle = [];
+  const medical = [];
+  const emergency = [];
+
+  // Always recommend
+  diet.push({ icon: '🥗', text: 'Eat a heart-healthy diet: more fruits, vegetables, whole grains, and lean proteins.' });
+  diet.push({ icon: '🧂', text: 'Reduce sodium intake to less than 2,300 mg/day (1 teaspoon of salt).' });
+  lifestyle.push({ icon: '🚶', text: 'Exercise at least 30 minutes of moderate activity (brisk walking) most days of the week.' });
+  lifestyle.push({ icon: '🚭', text: 'Avoid smoking. If you smoke, seek help to quit immediately.' });
+  lifestyle.push({ icon: '💤', text: 'Sleep 7–8 hours per night. Poor sleep raises blood pressure.' });
+
+  if (sbp >= 130 || dbp >= 80) {
+    diet.push({ icon: '🧃', text: 'Limit alcohol to ≤1 drink/day (women) or ≤2 drinks/day (men).' });
+    lifestyle.push({ icon: '🧘', text: 'Practice stress management: meditation, deep breathing, or yoga daily.' });
+    medical.push({ icon: '🩺', text: 'Monitor blood pressure at home daily and log your readings.' });
+    medical.push({ icon: '💊', text: 'Consult your doctor — antihypertensive medication may be necessary.' });
+  }
+
+  if (bmi >= 25) {
+    diet.push({ icon: '⚖️', text: 'Work towards a healthy weight — even 5–10% weight loss significantly reduces CVD risk.' });
+    lifestyle.push({ icon: '🏋️', text: 'Include strength training 2–3 times per week to improve metabolic health.' });
+  }
+
+  if (htn === 1) {
+    medical.push({ icon: '📋', text: 'Follow your prescribed hypertension treatment plan strictly. Do not stop medication without doctor advice.' });
+    medical.push({ icon: '🔬', text: 'Get annual kidney function and electrolyte blood tests (hypertension affects kidneys).' });
+  }
+
+  if (diab === 1) {
+    diet.push({ icon: '🍬', text: 'Control blood sugar — aim for HbA1c below 7%. Reduce refined sugars and simple carbs.' });
+    medical.push({ icon: '👁️', text: 'Get annual eye, kidney, and foot exams — diabetes affects multiple organs.' });
+    medical.push({ icon: '💉', text: 'Monitor blood glucose regularly as directed by your doctor.' });
+  }
+
+  if (score >= 5) {
+    medical.push({ icon: '❤️', text: 'Request a cardiac stress test (ECG/echo) from your cardiologist.' });
+    medical.push({ icon: '🧪', text: 'Get lipid panel, fasting glucose, and CRP blood tests every 6 months.' });
+    emergency.push({ icon: '🚨', text: 'Know the warning signs: chest pain, left arm pain, shortness of breath, sudden dizziness, or facial drooping — call emergency services immediately.' });
+    emergency.push({ icon: '📱', text: 'Share your CVD risk status with your family members so they can help in an emergency.' });
+  }
+
+  if (score >= 3) {
+    medical.push({ icon: '📅', text: 'Schedule a cardiology appointment within the next 30 days.' });
+  }
+
+  // Heart rate guidance
+  if (hr > 100) {
+    medical.push({ icon: '💓', text: `Elevated heart rate (${hr} bpm). This may indicate stress, dehydration, or arrhythmia. Consult your doctor.` });
+  } else if (hr < 50) {
+    medical.push({ icon: '💓', text: `Low heart rate (${hr} bpm) detected. This could indicate bradycardia. Seek medical evaluation.` });
+  }
+
+  return { diet, lifestyle, medical, emergency };
+}
+
+// ══════════════════════════════════════════════════
+// RUN ANALYSIS
+// ══════════════════════════════════════════════════
+function runAnalysis() {
+  const sbp = parseFloat(document.getElementById('sbp').value);
+  const dbp = parseFloat(document.getElementById('dbp').value);
+  const hr  = parseFloat(document.getElementById('heartRate').value);
+
+  if (!sbp || !dbp || !hr) {
+    alert('Please enter Systolic BP, Diastolic BP, and Heart Rate.');
+    return;
+  }
+
+  // Collect all data
+  const age    = parseInt(document.getElementById('age').value);
+  const height = parseFloat(document.getElementById('height').value);
+  const weight = parseFloat(document.getElementById('weight').value);
+  const bmi    = parseFloat(document.getElementById('bmi').value);
+  const htn    = state.htn  === 'yes' ? 1 : 0;
+  const diab   = state.diab === 'yes' ? 1 : 0;
+  const ci     = state.ci   === 'yes' ? 1 : 0;
+  const cvdHist= state.cvd  === 'yes' ? 1 : 0;
+
+  // Go to processing panel
+  goToPanel(3);
+
+  // Animate processing steps
+  const steps = ['ps1','ps2','ps3','ps4','ps5','ps6'];
+  const delays = [300, 700, 1100, 1500, 2000, 2500];
+  steps.forEach((id, i) => {
+    setTimeout(() => {
+      if (i > 0) document.getElementById(steps[i-1]).classList.replace('active-step','done-step');
+      document.getElementById(id).classList.add('active-step');
+    }, delays[i]);
+  });
+
+  // Show results after animation
+  setTimeout(() => {
+    const bpClass  = classifyBP(sbp, dbp);
+    const { score, factors } = scoreRisk(age, sbp, dbp, bmi, htn, diab, ci, cvdHist);
+    const precs    = getPrecautions(score, sbp, dbp, bmi, hr, htn, diab);
+
+    // Determine result level
+    let resultLevel, resultIcon, resultColor, resultTitle, resultDesc;
+    const maxScore = 14;
+    const pct = Math.min(100, Math.round((score / maxScore) * 100));
+
+    if (score === 0) {
+      resultLevel = 'low'; resultIcon = '💚'; resultColor = 'var(--green)';
+      resultTitle = 'Low CVD Risk Detected';
+      resultDesc  = 'Your vitals look healthy. Continue maintaining your current lifestyle.';
+    } else if (score <= 2) {
+      resultLevel = 'mild'; resultIcon = '💛'; resultColor = 'var(--yellow)';
+      resultTitle = 'Mild CVD Risk';
+      resultDesc  = 'Minor risk factors detected. Lifestyle modifications are recommended.';
+    } else if (score <= 4) {
+      resultLevel = 'moderate'; resultIcon = '🟠'; resultColor = 'var(--orange)';
+      resultTitle = 'Moderate CVD Risk';
+      resultDesc  = 'Several risk factors present. Consult your doctor within the next few weeks.';
+    } else if (score <= 7) {
+      resultLevel = 'high'; resultIcon = '🔴'; resultColor = 'var(--red)';
+      resultTitle = 'High CVD Risk';
+      resultDesc  = 'Significant cardiovascular risk detected. Please consult a cardiologist soon.';
+    } else {
+      resultLevel = 'critical'; resultIcon = '🆘'; resultColor = 'var(--red)';
+      resultTitle = 'Critical CVD Risk';
+      resultDesc  = 'Multiple high-risk factors detected. Seek medical consultation immediately.';
+    }
+
+    // Build precaution HTML
+    function buildPrecSection(label, items) {
+      if (!items.length) return '';
+      return `
+        <div class="prec-section">
+          <div class="prec-section-label">${label}</div>
+          <div class="prec-list">
+            ${items.map(p => `<div class="prec-item"><span class="pi">${p.icon}</span><span>${p.text}</span></div>`).join('')}
+          </div>
+        </div>`;
+    }
+
+    // Build risk factors HTML
+    const rfHTML = factors.length
+      ? factors.map(f => `
+          <div class="rf-item ${f.level}">
+            <div class="rf-dot"></div>
+            <span>${f.label}</span>
+          </div>`).join('')
+      : '<div class="prec-item"><span class="pi">✅</span><span>No significant risk factors detected.</span></div>';
+
+    document.getElementById('resultPanel').innerHTML = `
+      <!-- Result Hero -->
+      <div class="result-hero" style="--result-color:${resultColor}">
+        <div class="result-icon">${resultIcon}</div>
+        <div class="result-status">${resultTitle}</div>
+        <p style="color:var(--muted);font-size:.9rem;margin-top:.5rem;max-width:480px;margin-inline:auto">${resultDesc}</p>
+        <div class="result-score-wrap">
+          <div class="risk-label">Risk Score: ${score}/${maxScore}</div>
+          <div class="risk-meter"><div class="risk-bar" id="riskBarFill" style="width:0%;background:${resultColor}"></div></div>
+          <div class="risk-label">${pct}%</div>
+        </div>
+      </div>
+
+      <!-- Model Info -->
+      <div class="model-info">
+        <div style="color:var(--text);font-size:.8rem;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.06em">POWERED BY</div>
+        <div class="model-stat"><div class="model-stat-num">CNN</div><div class="model-stat-label">Primary Model</div></div>
+        <div class="model-stat"><div class="model-stat-num">95%</div><div class="model-stat-label">Accuracy</div></div>
+        <div class="model-stat"><div class="model-stat-num">5</div><div class="model-stat-label">Algorithms Tested</div></div>
+        <div class="model-stat"><div class="model-stat-num">PPG-BP</div><div class="model-stat-label">Dataset</div></div>
+        <div style="color:var(--muted);font-size:.75rem;flex:1;text-align:right">Decision Tree · Naive Bayes · KNN · SVM · CNN</div>
+      </div>
+
+      <!-- Metrics -->
+      <div class="metrics-grid">
+        ${buildMetric('Systolic BP', sbp + ' mmHg', getSBPStatus(sbp))}
+        ${buildMetric('Diastolic BP', dbp + ' mmHg', getDBPStatus(dbp))}
+        ${buildMetric('Heart Rate', hr + ' bpm', getHRStatus(hr))}
+        ${buildMetric('BMI', bmi.toFixed(1) + ' kg/m²', getBMIStatus(bmi))}
+        ${buildMetric('Age', age + ' yrs', getAgeStatus(age))}
+        ${buildMetric('Risk Score', score + ' / ' + maxScore, { label: resultLevel.toUpperCase(), cls: resultLevel === 'low' ? 'status-normal' : resultLevel === 'mild' ? 'status-elevated' : 'status-critical' })}
+      </div>
+
+      <!-- BP Category -->
+      <div class="bp-category">
+        <div class="bp-cat-icon">${bpClass.icon}</div>
+        <div>
+          <div class="bp-cat-title" style="color:${bpClass.color}">BP Category: ${bpClass.cat}</div>
+          <div class="bp-cat-desc">${bpClass.desc}</div>
+        </div>
+      </div>
+
+      <!-- Risk Factors -->
+      <div class="risk-factors">
+        <div class="rf-title">Detected Risk Factors</div>
+        <div class="rf-list">${rfHTML}</div>
+      </div>
+
+      <!-- Precautions -->
+      <div class="precautions">
+        <div class="prec-title">🩺 Personalised Precautions & Recommendations</div>
+        ${buildPrecSection('🥗 Diet & Nutrition', precs.diet)}
+        ${buildPrecSection('🏃 Lifestyle Changes', precs.lifestyle)}
+        ${buildPrecSection('💊 Medical Actions', precs.medical)}
+        ${precs.emergency.length ? buildPrecSection('🚨 Emergency Awareness', precs.emergency) : ''}
+      </div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button class="btn btn-main" onclick="window.print()">🖨️ Print Report</button>
+        <button class="btn btn-reset" onclick="resetApp()">↺ New Assessment</button>
+      </div>
+
+      <div style="margin-top:2rem;padding:1rem;background:var(--surface2);border:1px solid var(--border);font-size:.78rem;color:var(--muted);line-height:1.6">
+        <strong style="color:var(--text)">📌 Disclaimer:</strong> This tool is built on the PPG-BP clinical dataset as part of an academic ML project by Vyshnavi Gandla (KITS Warangal, 2026). The CNN model achieved 95% accuracy in research conditions. This is NOT a substitute for professional medical diagnosis. Always consult a qualified healthcare provider for medical decisions.
+      </div>
+    `;
+
+    goToPanel(4);
+
+    // Animate risk bar
+    setTimeout(() => {
+      document.getElementById('riskBarFill').style.width = pct + '%';
+    }, 200);
+  }, 3200);
+}
+
+// ── METRIC HELPERS ──
+function buildMetric(label, val, status) {
+  return `<div class="metric-card">
+    <div class="metric-label">${label}</div>
+    <div class="metric-value">${val}</div>
+    <div class="metric-status ${status.cls}">${status.label}</div>
+  </div>`;
+}
+function getSBPStatus(v) {
+  if (v < 120) return { label: '✓ Normal', cls: 'status-normal' };
+  if (v < 130) return { label: '⚠ Elevated', cls: 'status-elevated' };
+  if (v < 140) return { label: '⚠ Stage 1 HTN', cls: 'status-high' };
+  return { label: '⛔ Stage 2 HTN', cls: 'status-critical' };
+}
+function getDBPStatus(v) {
+  if (v < 80) return { label: '✓ Normal', cls: 'status-normal' };
+  if (v < 90) return { label: '⚠ Stage 1 HTN', cls: 'status-high' };
+  return { label: '⛔ Stage 2 HTN', cls: 'status-critical' };
+}
+function getHRStatus(v) {
+  if (v < 50) return { label: '⚠ Low (Bradycardia)', cls: 'status-high' };
+  if (v <= 100) return { label: '✓ Normal Range', cls: 'status-normal' };
+  return { label: '⚠ High (Tachycardia)', cls: 'status-high' };
+}
+function getBMIStatus(v) {
+  if (v < 18.5) return { label: '⚠ Underweight', cls: 'status-elevated' };
+  if (v < 25)   return { label: '✓ Normal', cls: 'status-normal' };
+  if (v < 30)   return { label: '⚠ Overweight', cls: 'status-elevated' };
+  return { label: '⛔ Obese', cls: 'status-critical' };
+}
+function getAgeStatus(v) {
+  if (v < 40) return { label: '✓ Lower Risk', cls: 'status-normal' };
+  if (v < 50) return { label: '⚠ Moderate Risk', cls: 'status-elevated' };
+  return { label: '⚠ Higher Risk', cls: 'status-high' };
+}
+
+function resetApp() {
+  document.getElementById('age').value = '';
+  document.getElementById('sex').value = '';
+  document.getElementById('height').value = '';
+  document.getElementById('weight').value = '';
+  document.getElementById('bmi').value = '';
+  document.getElementById('bmiNote').textContent = '';
+  document.getElementById('sbp').value = '';
+  document.getElementById('dbp').value = '';
+  document.getElementById('heartRate').value = '';
+  ['htn','diab','ci','cvd'].forEach(f => setToggle(f, 'no'));
+  document.querySelectorAll('.proc-step').forEach(s => {
+    s.classList.remove('active-step','done-step');
+  });
+  goToPanel(1);
+}
+</script>
+</body>
+</html>
