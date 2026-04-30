@@ -1,26 +1,26 @@
-# CVD Detection App 🫀
+ CVD Detection App 
 
 A patient-facing Cardiovascular Disease (CVD) risk assessment 
 web application 
 
-## Live Demo
+Live Demo
 https://github.com/vysh30/cvd-detection-app.git
 
-## About
+About
 - Detects CVD risk based on patient vitals
 - Uses AHA Blood Pressure classification guidelines
 - Built on clinical PPG-BP dataset (CNN: 95% accuracy)
 - Provides personalised precautions upon risk detection
 
-## Tech Stack
+Tech Stack
 Python | TensorFlow | CNN | Scikit-learn | HTML/CSS/JS
 
-## Project By
+ Project By
 Vyshnavi Gandla — B.Tech ECIE, KITS Warangal 2026# cvd-detection-app
 CVD Risk Detection App using ML/DL
-# ❤️ Cardiovascular Disease Detection using Machine Learning
+Cardiovascular Disease Detection using Machine Learning
 
-## 📌 Overview
+ Overview
 
 Cardiovascular Disease (CVD) is one of the leading causes of death worldwide, responsible for millions of deaths every year. 
 
@@ -30,7 +30,7 @@ The goal is to assist in early detection, which plays a critical role in prevent
 
 ---
 
-## 🎯 Objectives
+##  Objectives
 
 * Predict cardiovascular disease using patient data
 * Perform data preprocessing and feature analysis
@@ -39,7 +39,7 @@ The goal is to assist in early detection, which plays a critical role in prevent
 
 ---
 
-## 📊 Dataset
+##  Dataset
 
 The dataset includes important medical features such as:
 
@@ -53,28 +53,28 @@ These features are widely used in medical research for predicting cardiovascular
 
 ---
 
-## ⚙️ Methodology
+ Methodology
 
-### 1. Data Preprocessing
+ 1. Data Preprocessing
 
 * Handling missing values
 * Data cleaning
 * Feature scaling
 
-### 2. Exploratory Data Analysis (EDA)
+ 2. Exploratory Data Analysis (EDA)
 
 * Understanding feature distributions
 * Correlation analysis
 * Visualization of key health indicators
 
-### 3. Model Building
+ 3. Model Building
 
 * Applied machine learning algorithms:
 
   * Logistic Regression
   * (Add others if used)
 
-### 4. Model Evaluation
+ 4. Model Evaluation
 
 * Accuracy
 * Precision
@@ -83,7 +83,7 @@ These features are widely used in medical research for predicting cardiovascular
 
 These metrics are commonly used to evaluate CVD prediction models. 
 
-## 🧠 Technologies Used
+ Technologies Used
 
 * Python
 * Pandas
@@ -93,38 +93,37 @@ These metrics are commonly used to evaluate CVD prediction models.
 * Google Colab
 
 
-## 🚀 How to Run the Project
+ How to Run the Project
 
 1. Clone the repository:git clone https://github.com/vysh30/cvd-detection-app.git
 2. Open the notebook:cvd_detection.ipynb
 3. Run all cells in:
 Google Colab OR
 Jupyter Notebook
-## 📈 Results
+ Results
 
 * Model Accuracy: **(update your result here)**
 * The model demonstrates the ability to predict cardiovascular risk based on patient health data
 
+ Project Demo
 
-## 📷 Project Demo
-
-👉 Notebook:
+Notebook:
 https://github.com/vysh30/cvd-detection-app/blob/main/cvd_detection.ipynb
 
 
-## 🤝 Contribution
+ Contribution
 
 Feel free to fork this repository and improve the model or add new features.
 
 
-## 👤 Author
+Author
 
 Vyshnavi
 
 * GitHub: https://github.com/vysh30
 
 
-##  Disclaimer
+ Disclaimer
 
 This project is for educational purposes only and should not be used as a substitute for professional medical diagnosis.
 
