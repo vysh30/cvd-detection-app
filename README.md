@@ -4,7 +4,7 @@ A patient-facing Cardiovascular Disease (CVD) risk assessment
 web application 
 
 Live Demo
-https://github.com/vysh30/cvd-detection-app.git
+ https://vysh30.github.io/cvd-detection-app/
 
 About
 - Detects CVD risk based on patient vitals
