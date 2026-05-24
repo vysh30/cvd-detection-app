@@ -1,4 +1,6 @@
- CVD Detection App 
+# Hi, I'm Vyshnavi 👋
+
+I'm a final-year B.Tech student in Electronics, Communication & Instrumentation Engineering at KITS Warangal (2026). I build ML/AI systems that solve real healthcare problems — not just notebook experiments, but deployed, working apps.
 
 A patient-facing Cardiovascular Disease (CVD) risk assessment 
 web application 
@@ -27,31 +29,6 @@ Cardiovascular Disease (CVD) is one of the leading causes of death worldwide, re
 This project focuses on building a machine learning-based prediction system to identify the likelihood of cardiovascular disease using patient health parameters.
 
 The goal is to assist in early detection, which plays a critical role in preventing severe outcomes and improving healthcare decisions.
-
----
-
-##  Objectives
-
-* Predict cardiovascular disease using patient data
-* Perform data preprocessing and feature analysis
-* Train and evaluate machine learning models
-* Provide a simple and reproducible ML workflow
-
----
-
-##  Dataset
-
-The dataset includes important medical features such as:
-
-* Age
-* Gender
-* Blood Pressure
-* Cholesterol
-* Heart-related indicators
-
-These features are widely used in medical research for predicting cardiovascular risk. ([Nano NTP][2])
-
----
 
  Methodology
 
@@ -110,15 +87,26 @@ Jupyter Notebook
 Notebook:
 https://github.com/vysh30/cvd-detection-app/blob/main/cvd_detection.ipynb
 
-
  Contribution
 
 Feel free to fork this repository and improve the model or add new features.
 
 
 Author
-
 Vyshnavi
+
+Let's connect
+
+I'm actively looking for **internships, entry-level ML/AI roles, and open-source collaborations**.
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=flat&logo=linkedin&logoColor=white)](https://https://www.linkedin.com/in/vyshnavipatel3021/)
+[![Email](https://img.shields.io/badge/Email-D14836?style=flat&logo=gmail&logoColor=white)](mailto:Vyshnavigandla92@gmail.com)
+
+---
+
+<p align="center">
+  <img src="https://komarev.com/ghpvc/?username=vysh30&color=blueviolet&style=flat" alt="profile views" />
+</p>
 
 * GitHub: https://github.com/vysh30
 
